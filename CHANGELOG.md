@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Move repository, installation, issue and catalog submission links to `danielyongzx1/dsh-clanker-bridge`.
+
 ## 0.1.0
 
 - Extract the remote agent bridge from Clanker's companion into a self-contained Harness plugin.

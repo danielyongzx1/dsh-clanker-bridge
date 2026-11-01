@@ -1,0 +1,6 @@
+url: https://github.com/danielyongzx1/dsh-clanker-bridge
+name: danielyongzx1/dsh-clanker-bridge
+category: remote
+description:
+  en: Connect Clanker on your phone to Harness Desktop with authenticated agent chats, streamed progress, controls and file transfer.
+tarball: https://github.com/danielyongzx1/dsh-clanker-bridge/releases/latest/download/dsh-clanker-bridge.tgz

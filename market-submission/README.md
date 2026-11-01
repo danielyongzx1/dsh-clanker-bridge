@@ -1,6 +1,6 @@
 # dshmarket submission
 
-dshmarket reads the [awesome-dsh-plugin registry](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin). Submit `DANIE4588E__dsh-clanker-bridge.yml` as the single new file `data/plugins/DANIE4588E__dsh-clanker-bridge.yml` in a PR to that repository. Do not edit its generated README files.
+dshmarket reads the [awesome-dsh-plugin registry](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin). Submit `danielyongzx1__dsh-clanker-bridge.yml` as the single new file `data/plugins/danielyongzx1__dsh-clanker-bridge.yml` in a PR to that repository. Do not edit its generated README files.
 
 Their contribution rules require a public working repository with `dsh.bundle`, an installable package, and the `dsh-plugin` topic. **The repository must be at least one day old when submitted.** Wait for that eligibility before opening the listing PR; publication does not mean the plugin is already listed or approved.
 

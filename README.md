@@ -1,6 +1,6 @@
 # Clanker Bridge for DeepSeek Harness
 
-Use Harness Desktop as a remote backend in [Clanker](https://github.com/DANIE4588E/Clanker) on your phone. The plugin starts an authenticated bridge with Harness, handles its changing local port/token automatically, and keeps saved chats attached to the same device.
+Use Harness Desktop as a remote backend in [Clanker](https://github.com/danielyongzx1/Clanker) on your phone. The plugin starts an authenticated bridge with Harness, handles its changing local port/token automatically, and keeps saved chats attached to the same device.
 
 Includes streamed text and reasoning, model-specific effort selection, tool progress, approvals/questions, cancellation, context/speed/cache statistics, and real attachment uploads/downloads. The phone never executes the remote agent's tool events.
 
@@ -12,10 +12,10 @@ Requires the **official Harness Desktop 0.2.1-rc.5** and a Clanker build with **
 2. Install this repository:
 
    ```text
-   github:DANIE4588E/dsh-clanker-bridge
+   github:danielyongzx1/dsh-clanker-bridge
    ```
 
-   You can also install the prebuilt archive from the [latest GitHub release](https://github.com/DANIE4588E/dsh-clanker-bridge/releases/latest).
+   You can also install the prebuilt archive from the [latest GitHub release](https://github.com/danielyongzx1/dsh-clanker-bridge/releases/latest).
 3. If Harness requests a restart, fully quit it using the Windows tray menu and reopen it with your normal shortcut.
 4. On the PC, open this private local file in your browser:
 
