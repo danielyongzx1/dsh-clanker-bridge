@@ -49,7 +49,7 @@ Open Harness normally next time. It supplies its current API credentials in memo
 
 If another bridge already occupies the port, this plugin leaves that process alone. Change the port or disable the other bridge, then restart. Keep the data directory across upgrades. Removing it creates a new identity and prevents old chats from resuming against a replacement device.
 
-`connection.json` and `pairing.html` contain the stable bridge token. Keep them private. Pairing is a local file rather than an unauthenticated HTTP route. The plugin page gets the same details over the `/clanker-bridge` channel of Harness's own connection, which admits only Harness's signed-in owner after its Host/Origin checks. The changing upstream Harness launch token is never written to disk or sent to your phone.
+`connection.json` and `pairing.html` contain the stable bridge token. Keep them private. Pairing is a local file rather than an unauthenticated HTTP route. The plugin page gets the same details from `/api/clanker-bridge/pairing` on Harness's own authenticated `/api` bridge, which serves only Harness's signed-in owner after its Host/Origin checks. The changing upstream Harness launch token is never written to disk or sent to your phone.
 
 Enable **Context meter**, **Decode speed**, and **Cache hits** in Clanker to display reported usage. Unknown measurements stay hidden. Context uses Harness's current pressure/capacity, not lifetime token totals. Follow-up messages queue until the active turn settles; regeneration is disabled to avoid repeating agent actions.
 

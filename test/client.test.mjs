@@ -2,23 +2,28 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
-import { apply as applyHost, PAIRING_CHANNEL, pairingResponse } from '../src/index.mjs';
+import { apply as applyHost, PAIRING_ROUTE, pairingResponse } from '../src/index.mjs';
 
 const token = 'f'.repeat(64);
 const lan = { 'Wi-Fi': [{ family: 'IPv4', internal: false, address: '192.168.1.9' }] };
-const owner = { principal: { kind: 'owner' } };
 
-test('the pairing channel serves only Harness’s owner, and reports starting until the bridge is up', async () => {
-  let handler, channel;
-  const ctx = {
-    get: () => ({ await: () => new Promise(() => {}) }), on: () => {}, logger: () => console,
-    connection: { rpc: { handle: (name, fn) => { channel = name; handler = fn; } } },
-  };
-  applyHost(ctx);
-  assert.equal(channel, PAIRING_CHANNEL);
-  assert.deepEqual(await handler('pairing', {}, undefined, owner), { state: 'starting' });
-  await assert.rejects(handler('pairing', {}, undefined, { principal: { kind: 'guest' } }));
-  await assert.rejects(handler('other', {}, undefined, owner));
+const host = (connection, warnings = []) => ({
+  get: () => ({ await: () => new Promise(() => {}) }), on: () => {}, logger: () => ({ warn: (line) => warnings.push(line), error: () => {} }), connection,
+});
+
+test('the pairing route is an exact GET under Harness’s /api bridge, reporting starting until the bridge is up', async () => {
+  let route;
+  applyHost(host({ fetch: { register: (r) => { route = r; return () => {}; } } }));
+  assert.equal(route.path, PAIRING_ROUTE); assert.deepEqual(route.methods, ['GET']);
+  const response = await route.fetch(new Request('http://127.0.0.1/api/clanker-bridge/pairing'));
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+  assert.deepEqual(await response.json(), { state: 'starting' });
+});
+
+test('a Harness that refuses the route still runs the bridge, without the page', () => {
+  const warnings = [];
+  applyHost(host({ fetch: { register: () => { throw new Error('cannot get property "webServer" without inject'); } } }, warnings));
+  assert.match(warnings[0], /pairing\.html/);
 });
 
 test('a running bridge answers with a fresh QR code, its addresses and token', () => {
@@ -44,6 +49,7 @@ async function loadClient(states = []) {
   };
   vm.runInNewContext(await readFile(new URL('../src/client.js', import.meta.url), 'utf8'), {
     window: { __ModuleLoader__: { load: (entry) => { loaded = entry; } } },
+    fetch: () => new Promise(() => {}),
   });
   return { id: loaded.id, module: loaded.factory((name) => { assert.equal(name, 'react'); return react; }) };
 }
@@ -56,13 +62,12 @@ test('the browser half registers on this bundle’s Plugins page and shows the c
   const { id, module } = await loadClient();
   assert.equal(id, 'dsh-clanker-bridge');
   // The module lives in its own realm, so its objects are compared by value.
-  assert.equal(JSON.stringify(module.inject), JSON.stringify(['slots', 'locale', 'connection']));
+  assert.equal(JSON.stringify(module.inject), JSON.stringify(['slots', 'locale']));
   const registered = [], locales = [];
   const ctx = {
     effect: (fn) => fn(),
     locale: { register: (ns, lang) => { locales.push(`${ns}:${lang}`); return () => {}; } },
     slots: { inject: (_name, fn) => fn(), register: (options, component) => { registered.push({ options, component }); return () => {}; } },
-    connection: { rpc: { call: () => new Promise(() => {}) } },
   };
   module.apply(ctx);
   assert.deepEqual({ ...registered[0].options }, { name: 'plugins.bundle.config', key: 'dsh-clanker-bridge', locale: 'clankerBridge' });

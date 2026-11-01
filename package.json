@@ -1,6 +1,6 @@
 {
   "name": "dsh-clanker-bridge",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Connect Clanker on your phone to Harness Desktop, with streamed agent replies, controls and file transfer.",
   "license": "MIT",
   "type": "module",
@@ -43,7 +43,6 @@
     },
     "client": {
       "inject": [
-        "@deepseek-ai/dsh-client-connection",
         "@deepseek-ai/dsh-client-locale",
         "@deepseek-ai/dsh-client-ui-slots"
       ],

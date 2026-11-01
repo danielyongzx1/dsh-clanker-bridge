@@ -65,8 +65,8 @@ export async function startBridge(ctx, options = {}, dependencies = {}) {
   } catch (error) { await bridge.close(); throw error; }
 }
 
-/** The plugin page's channel. Harness admits only its signed-in owner before the handler runs. */
-export const PAIRING_CHANNEL = '/clanker-bridge';
+/** The plugin page's route, under Harness's authenticated /api bridge; it answers 403 to anyone but its signed-in owner. */
+export const PAIRING_ROUTE = '/api/clanker-bridge/pairing';
 
 /** What the plugin page shows. Addresses are read per request, so a network change shows on refresh. */
 export function pairingResponse(bridge, failure) {
@@ -81,11 +81,17 @@ export function apply(ctx, options = {}) {
   const cancelled = new Promise((resolve) => { cancelReady = resolve; });
   const log = ctx.logger?.('clanker-bridge') ?? console;
   const ready = ctx.get('loader')?.await() ?? Promise.resolve();
-  ctx.connection?.rpc?.handle(PAIRING_CHANNEL, async (endpoint, _payload, _signal, peer) => {
-    if (peer?.principal?.kind !== 'owner') throw new Error('Only this Harness owner can read the pairing code.');
-    if (endpoint !== 'pairing') throw new Error('Unknown Clanker bridge request.');
-    return pairingResponse(bridge, failure);
-  });
+  // The page is a convenience: if Harness can't take the route, the bridge still starts.
+  try {
+    ctx.connection?.fetch?.register({
+      path: PAIRING_ROUTE,
+      methods: ['GET'],
+      requestBody: 'buffered',
+      fetch: async () => Response.json(pairingResponse(bridge, failure), { headers: { 'Cache-Control': 'no-store' } }),
+    });
+  } catch (error) {
+    log.warn?.(`Clanker pairing page unavailable in Harness: ${error.message}. Use pairing.html instead.`);
+  }
   const begin = async () => {
     starting = (async () => {
       if (stopped) return;

@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.4.1
+
+- Fix 0.4.0 failing to start (`cannot get property "webServer" without inject`): the pairing page's data now comes from an exact route on Harness's authenticated `/api` bridge instead of an RPC channel, which cordis resolved against Harness's connection plugin rather than this one. A failure to register the page no longer stops the bridge.
+
 ## 0.4.0
 
-- Show the pairing QR code, addresses and bridge token on the plugin's own page in Harness (Plugins → dsh-clanker-bridge), with copy buttons and a refresh for network changes. The token stays hidden until **Show**. The page reads them over the plugin's `/clanker-bridge` channel, which Harness serves only to its signed-in owner.
+- Show the pairing QR code, addresses and bridge token on the plugin's own page in Harness (Plugins → dsh-clanker-bridge), with copy buttons and a refresh for network changes. The token stays hidden until **Show**. The page reads them from the plugin's `/api/clanker-bridge/pairing` route on Harness's authenticated `/api` bridge, which serves only its signed-in owner. If Harness can't take the route, the bridge still starts.
 
 ## 0.3.0
 
