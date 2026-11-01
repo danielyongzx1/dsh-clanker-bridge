@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
 
+- Let a chat switch to another model from the provider it started with. Each turn can name its model; a different provider is refused. Clanker offers switching once the bridge reports `modelSwitching`.
 - Move repository, installation, issue and catalog submission links to `danielyongzx1/dsh-clanker-bridge`.
 
 ## 0.1.0
