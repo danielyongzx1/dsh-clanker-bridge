@@ -1,12 +1,14 @@
 {
   "name": "dsh-clanker-bridge",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Connect Clanker on your phone to Harness Desktop, with streamed agent replies, controls and file transfer.",
   "license": "MIT",
   "type": "module",
   "main": "src/index.mjs",
   "exports": {
-    ".": "./src/index.mjs"
+    ".": "./src/index.mjs",
+    "./client": "./src/client.js",
+    "./package.json": "./package.json"
   },
   "files": [
     "src",
@@ -38,10 +40,18 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-slots"
+      ],
+      "platform": "web"
     }
   },
   "scripts": {
-    "check": "node --check src/index.mjs && node --check src/bridge/pairing.mjs && node --check src/bridge/server.mjs && node --check src/bridge/harness.mjs",
+    "check": "node --check src/index.mjs && node --check src/client.js && node --check src/bridge/pairing.mjs && node --check src/bridge/server.mjs && node --check src/bridge/harness.mjs",
     "test": "node --test test/*.test.mjs"
   },
   "dependencies": {

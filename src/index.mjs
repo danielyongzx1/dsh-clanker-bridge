@@ -5,7 +5,7 @@ import { createConnection } from 'node:net';
 import z from '@deepseek-ai/schemastery';
 import { resolveDshHome } from '@deepseek-ai/dsh-home-paths';
 import { createBridge } from './bridge/server.mjs';
-import { writePairingPage } from './bridge/pairing.mjs';
+import { pairingDetails, writePairingPage } from './bridge/pairing.mjs';
 
 export const name = 'clanker-bridge';
 export const inject = ['webServer', 'connection'];
@@ -57,23 +57,42 @@ export async function startBridge(ctx, options = {}, dependencies = {}) {
   const bridge = await (dependencies.createBridge ?? createBridge)(config);
   try {
     await new Promise((resolve, reject) => { bridge.server.once('error', reject); bridge.server.listen(config.port, config.host, resolve); });
-    const page = await writePairingPage(path.join(directory, 'pairing.html'), { kind: 'harness', bridgeId: bridge.state.bridgeId, token: settings.bridgeToken, host: config.host, port: config.port });
+    const pairing = { kind: 'harness', bridgeId: bridge.state.bridgeId, token: settings.bridgeToken, host: config.host, port: config.port };
+    const page = await writePairingPage(path.join(directory, 'pairing.html'), pairing);
     (dependencies.log ?? console.log)(`[Clanker] Bridge ready on port ${config.port}. Pairing instructions: ${page}`);
+    bridge.pairing = { ...pairing, file: page };
     return bridge;
   } catch (error) { await bridge.close(); throw error; }
 }
 
+/** The plugin page's channel. Harness admits only its signed-in owner before the handler runs. */
+export const PAIRING_CHANNEL = '/clanker-bridge';
+
+/** What the plugin page shows. Addresses are read per request, so a network change shows on refresh. */
+export function pairingResponse(bridge, failure) {
+  if (!bridge?.pairing) return failure ? { state: 'failed', error: failure } : { state: 'starting' };
+  const { file, ...options } = bridge.pairing;
+  const { name, addresses, qr, loopbackOnly } = pairingDetails(options);
+  return { state: 'ready', name, addresses, qr, loopbackOnly, token: options.token, file };
+}
+
 export function apply(ctx, options = {}) {
-  let stopped = false, bridge, retry, cancelReady, starting;
+  let stopped = false, bridge, retry, cancelReady, starting, failure;
   const cancelled = new Promise((resolve) => { cancelReady = resolve; });
   const log = ctx.logger?.('clanker-bridge') ?? console;
   const ready = ctx.get('loader')?.await() ?? Promise.resolve();
+  ctx.connection?.rpc?.handle(PAIRING_CHANNEL, async (endpoint, _payload, _signal, peer) => {
+    if (peer?.principal?.kind !== 'owner') throw new Error('Only this Harness owner can read the pairing code.');
+    if (endpoint !== 'pairing') throw new Error('Unknown Clanker bridge request.');
+    return pairingResponse(bridge, failure);
+  });
   const begin = async () => {
     starting = (async () => {
       if (stopped) return;
-      try { bridge = await startBridge(ctx, options); }
+      try { bridge = await startBridge(ctx, options); failure = undefined; }
       catch (error) {
-        log.error(error.code === 'EADDRINUSE' ? 'Clanker bridge port is already in use. Change its port or stop the other bridge.' : 'Clanker bridge could not start. Check its storage and plugin configuration.');
+        failure = error.code === 'EADDRINUSE' ? 'Clanker bridge port is already in use. Change its port or stop the other bridge.' : 'Clanker bridge could not start. Check its storage and plugin configuration.';
+        log.error(failure);
         if (!stopped) retry = setTimeout(() => { void begin(); }, 10000);
       }
     })();

@@ -21,7 +21,8 @@ export function pairingLink({ bridgeId, token, name, urls }) {
   return `clanker://pair?${query.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&')}`;
 }
 
-export function pairingHtml({ kind, bridgeId, token, host = '0.0.0.0', port, name = `${KIND_LABELS[kind]} · ${hostname()}`, interfaces }) {
+/** The name, current addresses and QR code (an SVG; empty when the phone can't reach the bridge). */
+export function pairingDetails({ kind, bridgeId, token, host = '0.0.0.0', port, name = `${KIND_LABELS[kind]} · ${hostname()}`, interfaces }) {
   const addresses = pairingAddresses(host, port, interfaces);
   let qr = '';
   if (addresses.length) {
@@ -30,6 +31,12 @@ export function pairingHtml({ kind, bridgeId, token, host = '0.0.0.0', port, nam
     code.make();
     qr = code.createSvgTag({ cellSize: 4, margin: 4, scalable: true, alt: 'Clanker pairing code' });
   }
+  return { name, addresses, qr, loopbackOnly: LOOPBACK.includes(host) };
+}
+
+export function pairingHtml(options) {
+  const { token, host = '0.0.0.0' } = options;
+  const { name, addresses, qr } = pairingDetails(options);
   return `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer"><title>Pair Clanker</title>
 <style>:root{color-scheme:light dark;font:16px/1.55 system-ui,sans-serif}body{max-width:600px;margin:48px auto;padding:0 24px}h1{font-size:28px;letter-spacing:-.6px;margin-bottom:8px}h2{font-size:17px;margin-top:28px}p{margin:8px 0 16px}label{display:block;margin-top:16px;font-size:14px}input{box-sizing:border-box;width:100%;padding:10px 12px;font:14px/1.5 ui-monospace,monospace;border:1px solid #8886;border-radius:6px;background:transparent;color:inherit}button{margin-top:8px;padding:7px 12px;font:inherit;border:1px solid #8886;border-radius:6px;cursor:pointer}li{margin:8px 0}.qr{width:260px;max-width:100%;margin:16px 0;border-radius:8px;overflow:hidden}.qr svg{display:block;width:100%;height:auto}.note{margin-top:32px;border-top:1px solid #8884;padding-top:16px;font-size:14px}</style>
 <h1>Pair Clanker with this PC</h1>

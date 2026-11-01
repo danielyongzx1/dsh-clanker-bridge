@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+- Show the pairing QR code, addresses and bridge token on the plugin's own page in Harness (Plugins → dsh-clanker-bridge), with copy buttons and a refresh for network changes. The token stays hidden until **Show**. The page reads them over the plugin's `/clanker-bridge` channel, which Harness serves only to its signed-in owner.
+
 ## 0.3.0
 
 - Show a QR code on the pairing page. Scanning it in Clanker (Settings → Backends → Scan QR code) fills in the addresses and token, and reconnects a backend already saved for this bridge without losing its chats.
