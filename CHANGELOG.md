@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+
+- Show a QR code on the pairing page. Scanning it in Clanker (Settings → Backends → Scan QR code) fills in the addresses and token, and reconnects a backend already saved for this bridge without losing its chats.
+- Name the connection after the PC by default.
+
 ## 0.2.0
 
 - Let a chat switch to another model from the provider it started with. Each turn can name its model; a different provider is refused. Clanker offers switching once the bridge reports `modelSwitching`.

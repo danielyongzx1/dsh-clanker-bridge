@@ -1,20 +1,47 @@
 {
   "name": "dsh-clanker-bridge",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Connect Clanker on your phone to Harness Desktop, with streamed agent replies, controls and file transfer.",
   "license": "MIT",
   "type": "module",
   "main": "src/index.mjs",
-  "exports": { ".": "./src/index.mjs" },
-  "files": ["src", "cordis.patch.yml", "README.md", "LICENSE", "CHANGELOG.md"],
-  "repository": { "type": "git", "url": "https://github.com/danielyongzx1/dsh-clanker-bridge.git" },
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "files": [
+    "src",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danielyongzx1/dsh-clanker-bridge.git"
+  },
   "homepage": "https://github.com/danielyongzx1/dsh-clanker-bridge#readme",
-  "bugs": { "url": "https://github.com/danielyongzx1/dsh-clanker-bridge/issues" },
-  "keywords": ["dsh-plugin", "deepseek-harness", "clanker", "mobile", "remote", "files"],
-  "engines": { "node": ">=24.9.0", "dsh": "0.2.1-rc.5" },
-  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } },
+  "bugs": {
+    "url": "https://github.com/danielyongzx1/dsh-clanker-bridge/issues"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "clanker",
+    "mobile",
+    "remote",
+    "files"
+  ],
+  "engines": {
+    "node": ">=24.9.0",
+    "dsh": "0.2.1-rc.5"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
   "scripts": {
-    "check": "node --check src/index.mjs && node --check src/pairing.mjs && node --check src/bridge/server.mjs && node --check src/bridge/harness.mjs",
+    "check": "node --check src/index.mjs && node --check src/bridge/pairing.mjs && node --check src/bridge/server.mjs && node --check src/bridge/harness.mjs",
     "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
@@ -28,7 +55,10 @@
     "@deepseek-ai/dsh-scope": "0.2.1-rc.5",
     "@deepseek-ai/dsh-typert-registry": "0.2.1-rc.5",
     "@deepseek-ai/schemastery": "3.18.5",
+    "qrcode-generator": "2.0.4",
     "ws": "8.22.0"
   },
-  "overrides": { "zod": "4.6.6" }
+  "overrides": {
+    "zod": "4.6.6"
+  }
 }

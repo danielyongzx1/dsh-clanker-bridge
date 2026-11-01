@@ -5,7 +5,7 @@ import { createConnection } from 'node:net';
 import z from '@deepseek-ai/schemastery';
 import { resolveDshHome } from '@deepseek-ai/dsh-home-paths';
 import { createBridge } from './bridge/server.mjs';
-import { writePairingPage } from './pairing.mjs';
+import { writePairingPage } from './bridge/pairing.mjs';
 
 export const name = 'clanker-bridge';
 export const inject = ['webServer', 'connection'];
@@ -57,7 +57,7 @@ export async function startBridge(ctx, options = {}, dependencies = {}) {
   const bridge = await (dependencies.createBridge ?? createBridge)(config);
   try {
     await new Promise((resolve, reject) => { bridge.server.once('error', reject); bridge.server.listen(config.port, config.host, resolve); });
-    const page = await writePairingPage(directory, config.port, settings.bridgeToken);
+    const page = await writePairingPage(path.join(directory, 'pairing.html'), { kind: 'harness', bridgeId: bridge.state.bridgeId, token: settings.bridgeToken, host: config.host, port: config.port });
     (dependencies.log ?? console.log)(`[Clanker] Bridge ready on port ${config.port}. Pairing instructions: ${page}`);
     return bridge;
   } catch (error) { await bridge.close(); throw error; }

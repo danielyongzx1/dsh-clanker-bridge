@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
 import { deviceSettings, startBridge, apply } from '../src/index.mjs';
-import { pairingHtml } from '../src/pairing.mjs';
+import { pairingHtml } from '../src/bridge/pairing.mjs';
 
 test('a fresh device generates its own stable pairing credentials without a local config file', async () => {
   const directory = await mkdtemp(path.join(tmpdir(), 'clanker-device-'));
@@ -28,7 +28,7 @@ test('host generations keep bridge identity settings while using only the curren
     const server = http.createServer();
     // Ephemeral port only inside the test's fake bridge, avoiding global listeners.
     const listen = server.listen.bind(server); server.listen = (_port, _host, callback) => listen(0, '127.0.0.1', callback);
-    return { server, close: async () => { await new Promise((resolve) => server.close(resolve)); } };
+    return { server, state: { bridgeId: 'fixture-bridge' }, close: async () => { await new Promise((resolve) => server.close(resolve)); } };
   };
   let bridge;
   try {
@@ -48,7 +48,7 @@ test('host generations keep bridge identity settings while using only the curren
 });
 
 test('pairing stays in a local file and escapes interface names and values', () => {
-  const html = pairingHtml(8788, 'fixture-token', { '<script>bad</script>': [{ family: 'IPv4', internal: false, address: '192.168.1.10' }] });
+  const html = pairingHtml({ kind: 'harness', bridgeId: 'fixture-bridge', token: 'fixture-token', port: 8788, interfaces: { '<script>bad</script>': [{ family: 'IPv4', internal: false, address: '192.168.1.10' }] } });
   assert.ok(html.includes('http://192.168.1.10:8788'));
   assert.ok(html.includes('&lt;script&gt;bad&lt;/script&gt;'));
   assert.ok(!html.includes('<script>bad</script>'));

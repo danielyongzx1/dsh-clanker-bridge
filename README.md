@@ -24,7 +24,7 @@ Requires the **official Harness Desktop 0.2.1-rc.5** and a Clanker build with **
    ```
 
    If you use `DSH_HOME`, it is under that directory instead. A custom storage directory is used when configured. The plugin logs the file's path, never the token.
-5. In Clanker, select **Settings → Backends → Add remote backend**. Copy the PC's Wi-Fi/Ethernet address and bridge token from that page. Tap **Test connection**, choose a model, then **Save**.
+5. In Clanker, select **Settings → Backends → Add remote backend**, tap **Scan QR code** and scan the code on that page. Clanker fills in the PC's addresses and bridge token and tests them; choose a model, then **Save**. You can also copy the address and token from the page by hand.
 6. Start a new chat and choose the saved backend.
 
 The bridge defaults to port **8788**. Allow that port on your private Windows network. Your phone needs a route to the PC through the same LAN or a private VPN; use HTTPS through a reverse proxy for internet access. Saving an alternative address in Clanker does not establish the network route itself.
@@ -32,6 +32,8 @@ The bridge defaults to port **8788**. Allow that port on your private Windows ne
 No Clanker source checkout, separate Node installation, console launch or manual Harness token copying is needed on the other PC. The plugin runs inside Harness's Node runtime. **Windows is the verified platform.** Other desktop distributions and operating systems are not live-verified.
 
 ## Settings and daily use
+
+To reconnect after the PC's address or token changes, open the backend in Clanker and tap **Scan QR code** again. A code from the same bridge updates the saved backend, so its chats keep working.
 
 The plugin's configuration accepts:
 
