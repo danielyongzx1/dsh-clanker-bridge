@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+
+- Let a chat switch to any model the bridge offers, not only one from the provider it started with. The bridge reports `modelSwitching: 'any'`; Clanker keeps a chat on its provider with bridges that report `true`.
+
 ## 0.4.1
 
 - Fix 0.4.0 failing to start (`cannot get property "webServer" without inject`): the pairing page's data now comes from an exact route on Harness's authenticated `/api` bridge instead of an RPC channel, which cordis resolved against Harness's connection plugin rather than this one. A failure to register the page no longer stops the bridge.
